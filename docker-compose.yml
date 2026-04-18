@@ -1,16 +1,21 @@
 version: '3.8'
 
 services:
-  # primeira caixa
+  # API Gateway (A porta de entrada)
+  meu-gateway:
+    build: ./api-gateway
+    ports:
+      - "4000:4000" # O usuário só acessa essa porta
+    container_name: api-gateway
+
+  # Serviço de Paciente
   meu-patient:
     build: ./patient-service
-    ports:
-      - "3000:3000"
+    # O computador físico não acessa mais essa caixa, só o Gateway acessa ela pela rede interna.
     container_name: api-patient
 
-  #  egunda caixa
+  # Serviço de Autenticação 
   meu-auth:
     build: ./auth-service
-    ports:
-      - "3001:3000" # Mágica: No PC roda na 3001, mas dentro da caixa é a 3000!
+    # Também apagamos o "ports" aqui pelo mesmo motivo da segurança.
     container_name: api-auth
