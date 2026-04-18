@@ -1,0 +1,9 @@
+{
+  "name": "patient-service",
+  "version": "1.0.0",
+  "description": "Servico de pacientes com banco de dados",
+  "main": "app.js",
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
+}

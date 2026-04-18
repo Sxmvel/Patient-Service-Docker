@@ -1,21 +1,35 @@
 version: '3.8'
 
 services:
-  # API Gateway (A porta de entrada)
   meu-gateway:
     build: ./api-gateway
     ports:
-      - "4000:4000" # O usuário só acessa essa porta
+      - "4000:4000"
     container_name: api-gateway
 
-  # Serviço de Paciente
-  meu-patient:
-    build: ./patient-service
-    # O computador físico não acessa mais essa caixa, só o Gateway acessa ela pela rede interna.
-    container_name: api-patient
-
-  # Serviço de Autenticação 
   meu-auth:
     build: ./auth-service
-    # Também apagamos o "ports" aqui pelo mesmo motivo da segurança.
     container_name: api-auth
+
+  meu-patient:
+    build: ./patient-service
+    container_name: api-patient
+    depends_on:
+      - meu-banco-dados
+
+ 
+  meu-banco-dados:
+    image: postgres:15-alpine
+    container_name: database-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: senha_super_secreta
+      POSTGRES_DB: clinica_db
+    ports:
+      - "5432:5432" 
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+
+volumes:
+  pgdata:

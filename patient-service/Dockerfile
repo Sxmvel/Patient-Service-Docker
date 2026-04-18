@@ -1,14 +1,14 @@
-# 1. IMAGEM BASE: Pega um Linux bem levinho (alpine)
 FROM node:18-alpine
-
-# 2. DIRETÓRIO DE TRABALHO: Cria uma pasta chamada /app dentro do container e entra nela
 WORKDIR /app
 
-# 3. COPIAR ARQUIVOS: Copia o nosso arquivo app.js
+# 1. Copia PRIMEIRO o package.json
+COPY package.json .
+
+# 2. Instala as dependências (a biblioteca pg)
+RUN npm install
+
+# 3. Só depois copia o resto do código
 COPY app.js .
 
-# 4. PORTA DE REDE: Informa que este container vai se comunicar através da porta 3000
 EXPOSE 3000
-
-# 5. COMANDO DE INÍCIO:
 CMD ["node", "app.js"]
