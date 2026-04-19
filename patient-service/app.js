@@ -1,5 +1,6 @@
 const http = require('http');
 const { Pool } = require('pg');
+const os = require('os');
 
 // 1. Configurando a conexão com o banco de dados
 const pool = new Pool({
@@ -39,11 +40,17 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
 
   // ROTA 1: Ler os dados (GET)
-  if (req.method === 'GET') {
+ if (req.method === 'GET') {
     try {
       const resultado = await pool.query('SELECT * FROM pacientes');
       res.statusCode = 200;
-      res.end(JSON.stringify(resultado.rows));
+      
+      // Vamos embrulhar a resposta para mostrar QUAL container atendeu!
+      res.end(JSON.stringify({
+        atendido_pelo_container: os.hostname(), 
+        pacientes: resultado.rows
+      }));
+      
     } catch (error) {
       res.statusCode = 500;
       res.end(JSON.stringify({ erro: "Erro interno ao buscar dados no banco." }));

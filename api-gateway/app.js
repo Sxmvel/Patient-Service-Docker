@@ -19,13 +19,15 @@ const server = http.createServer(async (req, res) => {
       }
     });
   }
-  
+
   // 2. BUSCAR PACIENTES (GET)
   else if (req.url === '/paciente' && req.method === 'GET') {
     const tokenHeader = req.headers['authorization'];
     if (tokenHeader === 'Bearer token-secreto-do-joao-xyz') {
       try {
-        const respostaPatient = await fetch('http://api-patient:3000/');
+        const respostaPatient = await fetch('http://meu-patient:3000/', {
+          headers: { 'Connection': 'close' } 
+        });
         const dados = await respostaPatient.json();
         res.statusCode = 200; res.end(JSON.stringify(dados));
       } catch (error) {
@@ -39,22 +41,22 @@ const server = http.createServer(async (req, res) => {
   // 3. NOVA ROTA: CADASTRAR PACIENTE (POST)
   else if (req.url === '/paciente' && req.method === 'POST') {
     const tokenHeader = req.headers['authorization'];
-    
+
     // 1º Passo: Exige o crachá!
     if (tokenHeader === 'Bearer token-secreto-do-joao-xyz') {
       let body = '';
       req.on('data', chunk => { body += chunk.toString(); });
-      
+
       req.on('end', async () => {
         try {
           // 2º Passo: O crachá é válido. Manda os dados para o Patient-service!
-          const respostaPatient = await fetch('http://api-patient:3000/', {
-            method: 'POST', 
-            body: body, 
+          const respostaPatient = await fetch('http://meu-patient:3000/', {
+            method: 'POST',
+            body: body,
             headers: { 'Content-Type': 'application/json' }
           });
           const dados = await respostaPatient.json();
-          res.statusCode = respostaPatient.status; 
+          res.statusCode = respostaPatient.status;
           res.end(JSON.stringify(dados));
         } catch (error) {
           res.statusCode = 500; res.end(JSON.stringify({ erro: "Erro no Patient-service" }));
@@ -64,7 +66,7 @@ const server = http.createServer(async (req, res) => {
       res.statusCode = 401; res.end(JSON.stringify({ erro: "Acesso Negado para cadastro." }));
     }
   }
-  
+
   else {
     res.statusCode = 404; res.end(JSON.stringify({ erro: "Rota nao encontrada" }));
   }

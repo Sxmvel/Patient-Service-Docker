@@ -13,9 +13,10 @@ services:
 
   meu-patient:
     build: ./patient-service
-    container_name: api-patient
     depends_on:
       - meu-banco-dados
+    deploy:
+      replicas: 3
 
  
   meu-banco-dados:
